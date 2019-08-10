@@ -16,7 +16,7 @@ import random
 # Matrix elements must be equal but not identical
 # 1 mark for creating the correct matrix
 
-
+# Inicializa la matrix en blanco (4x4) lista de listas
 def new_game(n):
     matrix = []
 
@@ -38,9 +38,10 @@ def add_two(mat):
     a = random.randint(0, len(mat)-1)
     b = random.randint(0, len(mat)-1)
     while(mat[a][b] != 0):
+        # Si ya existe esa posicion(ya hay un 2), elige otra
         a = random.randint(0, len(mat)-1)
         b = random.randint(0, len(mat)-1)
-    mat[a][b] = 2
+    mat[a][b] = 2 #siempre inicializamos el juego con 2 numeros 2
     return mat
 
 ###########
