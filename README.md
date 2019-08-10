@@ -1,17 +1,26 @@
 2048-python
 ===========
 
-Based on the popular game [2048](https://github.com/gabrielecirulli/2048) by Gabriele Cirulli, here is a Python version that uses TKinter. 
+# 0. Introduction
 
-![screenshot](img/screenshot.png)
+Se crea un nuevo repositorio a Git y se hace un clone del repositorio que copiamos:
 
-To start the game, run:
-    
-    $ python3 puzzle.py
+git clone https://github.com/yangshun/2048-python.git 2048
 
+Se añade el nombre de la carpeta que queremos crear con ese proyecto.
+En nuestro caso se crea en el drive D:/ en la carpeta Projectes
 
-Contributors:
-==
+En GitHub se ha creado ya el repositorio vacío 2048. Vamos a SourceTree abrimos con "Add" el directorio 2048.
 
-- [Tay Yang Shun](http://github.com/yangshun)
-- [Emmanuel Goh](http://github.com/emman27)
+Ahora mismo, el repositorio sigue linkado a yangshun por lo que un push implica pedir permisos para modificar su código.
+Como hemos creado ya nuestro propio repositorio vamos a "Settings", clicamos el origin y hacemos un "Edit", indicando la URL de Github con nuestro nuevo repositorio.
+
+Una vez linkados, si hacemos cualquier cambio en esa carpeta, al hacer un commit y push, veremos que se actualiza en GitHub la carpeta y aparecen los ficheros del 2048.
+
+# 1. Test del código descargado
+
+Procedemos a ejecutar el codigo descargado. Para ello, como lo hemos guardado en el drive D:/, hay que abrir el "Anaconda Prompt" en ese path... Para ello ejecutar:
+
+```console
+cd /d d:\Projectes\2048
+```
