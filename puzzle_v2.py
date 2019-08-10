@@ -11,6 +11,7 @@ class GameGrid(Frame):
         Frame.__init__(self)
         self.grid()
         self.master.title('2048 by David')
+        self.master.bind("<Key>", self.crazy_update)
 
         self.commands = {c.KEY_UP: logic.up, c.KEY_DOWN: logic.down,
                          c.KEY_LEFT: logic.left, c.KEY_RIGHT: logic.right,
@@ -21,16 +22,10 @@ class GameGrid(Frame):
 
         # COMANDOS de INICIALIZACION y JUEGO
         self.init_grid()
-        #print("Init grid \n")
-        #time.sleep(4)
-        #print("Init matrix \n")
         self.init_matrix() #matriz con 2 numeros 2
-
-        #time.sleep(4)
-        #print("Update cells \n")
         self.update_grid_cells()
-        self.mainloop()
 
+        self.mainloop()
 
     def init_grid(self):
         # Creamos un cuadrado con un fondo de color game
@@ -93,10 +88,26 @@ class GameGrid(Frame):
                     # SI hay un numero, ve al diccionario de colores
                     # para ver el font color (fg) y el color de fondo
                     # de la celda (bg) ya que depende del numero
+                    try:
+                        color_back = c.BACKGROUND_COLOR_DICT[new_number]
+                        color_font = c.CELL_COLOR_DICT[new_number]
+                    except:
+                        color_back = "#FF5733"
+                        color_font = "#FFDBD6"
                     self.grid_cells[i][j].configure(text=str(
-                        new_number), bg=c.BACKGROUND_COLOR_DICT[new_number],
-                        fg=c.CELL_COLOR_DICT[new_number])
+                        new_number), bg=color_back,
+                        fg=color_font)
         #self.update_idletasks()
+        #print("UPDATING\n")
+        #time.sleep(4)
+
+    def crazy_update(self, event):
+        key = repr(event.char)
+        print("DOING CRAZY STUFF with {0} \n".format(key))
+        for i in range(c.GRID_LEN):
+            for j in range(c.GRID_LEN):
+                self.matrix[i][j] = 128
+        self.update_grid_cells()
 
 
 gamegrid = GameGrid()
