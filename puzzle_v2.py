@@ -118,17 +118,23 @@ class GameGrid(Frame):
         Sirve como deshacer movimiento
         """
         if len(self.history_matrixs) > 1:
-            self.matrix = self.history_matrixs.pop() #borramos la ultima matriz de la listas
+            # Recuperamos la penultima matriz (la ultima es la actual por lo que no se considera un deshacer)
+            self.matrix = self.history_matrixs.pop(-2)
             print("Going back to step:", len(self.history_matrixs))
+            self.update_grid_cells()
         else:
             print("No previous movements detected, please do a movement with arrows")
 
     def key_arrow(self, key_pressed):
         # Reemplaza la matrix por la matriz actualizada despues del movimiento
         self.matrix, done  = self.commands[key_pressed](self.matrix)
-        print(self.matrix)
-        print(done)
-        self.update_grid_cells()
+        if done:
+            # Si ha cambiado algo, añade un nuevo numero
+            self.matrix = logic.add_two(self.matrix, rand_num_choice = True)
+            # Record last move
+            self.history_matrixs.append(self.matrix)
+            self.update_grid_cells()
+            done = False # cambiamos el done por si afecta en la siguiente iteración
 
 
 gamegrid = GameGrid()

@@ -12,17 +12,22 @@ def new_game(n):
         matrix.append([0] * n)
     return matrix
 
-def add_two(mat, times = 1):
+def add_two(mat, times = 1, rand_num_choice = False):
     """
     Busca aleatoriamente donde hay un 0 y le pone un 2 si esa celda
     está nula. Eso lo repetimos "times" veces
+    Si rand_num_choice = TRUE entonces se elige un numero entre el 2 y el 4
     """
     for _ in range(times):
         a, b = [random.randint(0, len(mat)-1) for _ in range(2)]
         while(mat[a][b] != 0):
             # Si ya existe esa posicion(ya hay un 2), elige otra
             a, b = [random.randint(0, len(mat)-1) for _ in range(2)]
-        mat[a][b] = 2 #siempre inicializamos el juego con 2 numeros 2
+        # Si estamos en medio de la partida, eligen entre los RANDOM_NUMBER_CHOICES de constats.py
+        if rand_num_choice:
+            mat[a][b] = np.random.choice(c.RANDOM_NUMBER_CHOICES, p = c.PROBAB_NUMBER_CHOICES)
+        else:
+            mat[a][b] = 2 #siempre inicializamos el juego con 2 numeros 2
     return mat
 
 ###########

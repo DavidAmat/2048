@@ -2,6 +2,11 @@ SIZE = 600
 GRID_LEN = 4
 GRID_PADDING = 10
 
+# Numeros que aparecen tras hacer un movimiento
+RANDOM_NUMBER_CHOICES = [2, 4]
+# Probabilidad de cada número de aparecer
+PROBAB_NUMBER_CHOICES = [0.7, 0.3]
+
 BACKGROUND_COLOR_GAME = "#92877d"
 BACKGROUND_COLOR_CELL_EMPTY = "#9e948a"
 
