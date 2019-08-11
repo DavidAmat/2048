@@ -23,11 +23,11 @@ class GameGrid(Frame):
         # DESHACER MOVIMIENTO con la tecla "b"
         self.master.bind("<b>", self.key_back)
 
-        # self.commands = {c.KEY_UP: logic.up, c.KEY_DOWN: logic.down,
-        #                  c.KEY_LEFT: logic.left, c.KEY_RIGHT: logic.right,
-        #                  c.KEY_UP_ALT: logic.up, c.KEY_DOWN_ALT: logic.down,
-        #                  c.KEY_LEFT_ALT: logic.left,
-        #                  c.KEY_RIGHT_ALT: logic.right}
+        # LLAMA a las funciones de MOVEMENTS que hacen el LEFT; UP; RIGHT; DOWN
+        self.commands = {"Down": logic.down,
+                         "Left": logic.left,
+                         "Up": logic.up,
+                         "Right": logic.right}
         self.grid_cells = []
 
         # COMANDOS de INICIALIZACION y JUEGO
@@ -113,6 +113,10 @@ class GameGrid(Frame):
 
     # CONFIGURACION BOTON ATRAS
     def key_back(self, event):
+        """
+        Si se pulsa la tecla b, vamos al histórico de movimientos y sacamos la matriz última que tengamos
+        Sirve como deshacer movimiento
+        """
         if len(self.history_matrixs) > 1:
             self.matrix = self.history_matrixs.pop() #borramos la ultima matriz de la listas
             print("Going back to step:", len(self.history_matrixs))
@@ -120,18 +124,11 @@ class GameGrid(Frame):
             print("No previous movements detected, please do a movement with arrows")
 
     def key_arrow(self, key_pressed):
-        if key_pressed == "Up":
-            print(key_pressed)
-
-
-
-
-    # def crazy_update(self, key_pressed):
-    #     for i in range(c.GRID_LEN):
-    #         for j in range(c.GRID_LEN):
-    #             self.matrix[i][j] = 128
-    #     self.update_grid_cells()
-    #     print(key_pressed)
+        # Reemplaza la matrix por la matriz actualizada despues del movimiento
+        self.matrix, done  = self.commands[key_pressed](self.matrix)
+        print(self.matrix)
+        print(done)
+        self.update_grid_cells()
 
 
 gamegrid = GameGrid()
