@@ -44,27 +44,24 @@ def add_two(mat, times = 1, rand_num_choice = False):
 
 
 def game_state(mat):
-    for i in range(len(mat)):
-        for j in range(len(mat[0])):
-            if mat[i][j] == 2048:
-                return 'win'
-    for i in range(len(mat)-1):
-        # intentionally reduced to check the row on the right and below
-        # more elegant to use exceptions but most likely this will be their solution
-        for j in range(len(mat[0])-1):
-            if mat[i][j] == mat[i+1][j] or mat[i][j+1] == mat[i][j]:
-                return 'not over'
-    for i in range(len(mat)):  # check for any zero entries
-        for j in range(len(mat[0])):
-            if mat[i][j] == 0:
-                return 'not over'
-    for k in range(len(mat)-1):  # to check the left/right entries on the last row
-        if mat[len(mat)-1][k] == mat[len(mat)-1][k+1]:
-            return 'not over'
-    for j in range(len(mat)-1):  # check up/down entries on last column
-        if mat[j][len(mat)-1] == mat[j+1][len(mat)-1]:
-            return 'not over'
-    return 'lose'
+    # Se pasa como argumento el objeto o clase importada (en ese caso sera mov de movements)
+    if np.array(mat).max() == c.OBJECTIVE:
+        return 'win'
+
+    #Se pierde si ningun movimiento produce un "done" TRUE
+    # Llamamos todas las funciones de movimiento a ver si alguna da un done = TRUE
+    done_state = False
+    for arrow in c.MOVEMENTS:
+        # Por ejemplo, left(mat) dara como ouptut: mat, done
+        _, done_arrow = eval(arrow.lower() + '(mat)')
+        done_state |= done_arrow # si hay un movimiento posible, keep playing
+        if done_state: break  # evita hacer todas las simulaciones si una ya da TRUE
+
+    if not done_state:
+        return 'lose'
+    else:
+        return 'ok' # ha de retornar algo para hacer la comparacion de strings == "win"
+
 
 ############################################
 #           Operaciones con matrices

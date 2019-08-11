@@ -1,6 +1,10 @@
 SIZE = 600
 GRID_LEN = 4
 GRID_PADDING = 10
+OBJECTIVE = 2048
+
+# MOVIMIENTOS
+MOVEMENTS = ["Down","Left", "Up", "Right"]
 
 # Numeros que aparecen tras hacer un movimiento
 RANDOM_NUMBER_CHOICES = [2, 4]
