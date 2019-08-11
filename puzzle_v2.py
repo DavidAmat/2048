@@ -2,7 +2,7 @@ import random
 from tkinter import Frame, Label, CENTER
 import time
 # Importamos codigos .py
-import logic
+import movements as logic
 import constants as c
 
 
@@ -11,13 +11,23 @@ class GameGrid(Frame):
         Frame.__init__(self)
         self.grid()
         self.master.title('2048 by David')
-        self.master.bind("<Key>", self.crazy_update)
+        #Cuando pulsemos una tecla de las arrows, le pasaremos a la funcion self.KEY_DOWN
+        # como argumento la tecla que se haya presionado
+        # MOVIMIENTOS
+        arrows = ["Down","Left", "Up", "Right"]
+        for arrow in arrows:
+            self.master.bind("<{0}>".format(arrow), # si se teclea una arrow
+                lambda event, key_pressed = arrow: self.key_arrow(key_pressed))
+                # pasale a la funcion un argumento llamado key_pressed con el nombre de la arrow
 
-        self.commands = {c.KEY_UP: logic.up, c.KEY_DOWN: logic.down,
-                         c.KEY_LEFT: logic.left, c.KEY_RIGHT: logic.right,
-                         c.KEY_UP_ALT: logic.up, c.KEY_DOWN_ALT: logic.down,
-                         c.KEY_LEFT_ALT: logic.left,
-                         c.KEY_RIGHT_ALT: logic.right}
+        # DESHACER MOVIMIENTO con la tecla "b"
+        self.master.bind("<b>", self.key_back)
+
+        # self.commands = {c.KEY_UP: logic.up, c.KEY_DOWN: logic.down,
+        #                  c.KEY_LEFT: logic.left, c.KEY_RIGHT: logic.right,
+        #                  c.KEY_UP_ALT: logic.up, c.KEY_DOWN_ALT: logic.down,
+        #                  c.KEY_LEFT_ALT: logic.left,
+        #                  c.KEY_RIGHT_ALT: logic.right}
         self.grid_cells = []
 
         # COMANDOS de INICIALIZACION y JUEGO
@@ -67,6 +77,8 @@ class GameGrid(Frame):
         # Llama al script logic y crea una matrix de zeros
         # [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
         self.matrix = logic.new_game(c.GRID_LEN)
+
+        # HISTORICO de MATRICES para ir hacia atras en caso de pulsar tecla "b"
         self.history_matrixs = list()
 
         # Añade un 2 en una posicion random
@@ -98,16 +110,28 @@ class GameGrid(Frame):
                         new_number), bg=color_back,
                         fg=color_font)
         #self.update_idletasks()
-        #print("UPDATING\n")
-        #time.sleep(4)
 
-    def crazy_update(self, event):
-        key = repr(event.char)
-        print("DOING CRAZY STUFF with {0} \n".format(key))
-        for i in range(c.GRID_LEN):
-            for j in range(c.GRID_LEN):
-                self.matrix[i][j] = 128
-        self.update_grid_cells()
+    # CONFIGURACION BOTON ATRAS
+    def key_back(self, event):
+        if len(self.history_matrixs) > 1:
+            self.matrix = self.history_matrixs.pop() #borramos la ultima matriz de la listas
+            print("Going back to step:", len(self.history_matrixs))
+        else:
+            print("No previous movements detected, please do a movement with arrows")
+
+    def key_arrow(self, key_pressed):
+        if key_pressed == "Up":
+            print(key_pressed)
+
+
+
+
+    # def crazy_update(self, key_pressed):
+    #     for i in range(c.GRID_LEN):
+    #         for j in range(c.GRID_LEN):
+    #             self.matrix[i][j] = 128
+    #     self.update_grid_cells()
+    #     print(key_pressed)
 
 
 gamegrid = GameGrid()
