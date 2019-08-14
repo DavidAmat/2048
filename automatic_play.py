@@ -27,8 +27,9 @@ class AutomaticPlay(Frame):
         # Log de la partida
         ##################################
         self.log = {}
-
-
+        self.log["mat"] = [] # histórico de matrices
+        self.log["mov"] = [''] #histórico de movimientos
+        # como guardamos la primera matriz, el primer mov es nulo
         ##################################
         # Linkar tecla arrow con funcion
         ##################################
@@ -45,12 +46,10 @@ class AutomaticPlay(Frame):
         self.init_matrix()
         self.update_grid_cells()
 
-        #########################################
-        # Resta a la espera de recibir órdenes
-        #########################################
-        self.log["mov"] = []
+        ###################################################
+        # Ejecuta la orden de empezar a generar movimientos
+        ###################################################
         self.start()
-        #self.mainloop()
 
     ##################################
     # Dar órdenes
@@ -69,7 +68,8 @@ class AutomaticPlay(Frame):
 
             #Guardamos en el log el movimiento escogido
             self.log["mov"].append(movimiento)
-
+            self.log["mat"].append(np.array(self.matrix).tolist())
+            print(self.log)
             # Se puede seleccionar un movimiento que no haga nada
             # este caso no lo queremos como output
             if hay_movimiento:
@@ -126,7 +126,7 @@ class AutomaticPlay(Frame):
         self.matrix = mov.add_two(self.matrix, times = 2)
 
         # Guardamos esa matriz inicial
-        self.log["mat"] = self.matrix
+        self.log["mat"].append(np.array(self.matrix).tolist())
 
     def update_grid_cells(self):
         for i in range(c.GRID_LEN):
@@ -207,10 +207,10 @@ class AutomaticPlay(Frame):
         # LOG
         #####################
         # Guardamos en el log el resultado de la partida
-        self.log["final"] = self.game_status_active
+        self.log["final"] = int(self.game_status_active)
         #Guarda el fichero en JSON con el encoding UTF-8
-        with open(c.FICHERO_LOG, 'w', encoding = 'utf-8') as f:
-            json.dump(self.log, f, ensure_ascii=False)
+        with open(c.FICHERO_LOG, 'w') as f:
+            json.dump(self.log, f)
 
         # SALIMOS DEL JUEGO
         self.quit()

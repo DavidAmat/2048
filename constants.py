@@ -8,7 +8,7 @@ GRID_PADDING = 5 # separación de celdas
 ########################
 # Puntuacion para ganar
 ########################
-OBJECTIVE = 128
+OBJECTIVE = 16
 
 ########################
 # Fichero log de salida

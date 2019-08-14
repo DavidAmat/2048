@@ -153,6 +153,11 @@ Para ello, se usa una función start que llama al **Thread** (de la librería th
 
 Se ve que se puede prescindir del mainloop ya que el código no tiene que estar permanentemente en modo "escuchar" por si le damos una instrucción ya que nosotros sabemos cuando va haber una instrucción por lo que podemos hacer un **update** cuando esto suceda. Por eso cambia el paradigma del código, ya que ahora a cada cambio llamamos a **self.update()** que actualiza el estado del tablero.
 
-También realizamos un fichero JSON llamado log_movimientos.json en la carpeta logs, con el cual se guarda la todas las matrices y los movimientos realizados. Esto se hace ya que cada ejecución es diferente y solo guardando los movimientos y la matriz incial no permitiría generar el mismo resultado ya que los números random que aparecen tras mover irían cambiando.  
+También realizamos un fichero JSON llamado log_movimientos.json en la carpeta logs, con el cual se guarda la todas las matrices y los movimientos realizados. Esto se hace ya que cada ejecución es diferente y solo guardando los movimientos y la matriz incial no permitiría generar el mismo resultado ya que los números random que aparecen tras mover irían cambiando. Da un error al guardar las listas de las matrices, así que se pasa a np.array y luego a tolist() y se evita el error. El fichero pretende mostrar cada matriz después de cada movimiento. Eso se codifica mediante un diccionario con 3 keys:
+- mat: matrices en cada movimiento (la primera matriz es la inicial)
+- mov: movimientos (el primero está vacío, ya que corresponde al estado inicial de la matriz)
+- final: 1= partida ganada, 2 = partida perdida
+
+La idea es que un mismo script, cuando se generen muchas partidas, se conforme de varios diccionarios y se pueda estudiar los ganados y los perdidos. 
 
 Para mejorar la visualización del juego automático mientras va jugando, se define un tiempo entre movimientos en <code>constants.py</code> con el nombre TIME_CPU_NEXT_MOVEMENT (se fija en 0.1 segundos).
