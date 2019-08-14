@@ -6,7 +6,7 @@ import numpy as np
 import movements as mov
 import constants as c
 import sys
-
+import json
 import threading
 
 class AutomaticPlay(Frame):
@@ -203,11 +203,16 @@ class AutomaticPlay(Frame):
         else:
             print("GAME LOST!")
 
+        #####################
+        # LOG
+        #####################
         # Guardamos en el log el resultado de la partida
         self.log["final"] = self.game_status_active
-        self.quit()
+        #Guarda el fichero en JSON con el encoding UTF-8
+        with open(c.FICHERO_LOG, 'w', encoding = 'utf-8') as f:
+            json.dump(self.log, f, ensure_ascii=False)
 
-    def exit_game(self):
-        sys.exit()
+        # SALIMOS DEL JUEGO
+        self.quit()
 
 gamegrid = AutomaticPlay()

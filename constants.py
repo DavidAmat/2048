@@ -1,12 +1,28 @@
+############
+# Tablero
+############
 SIZE = 100
-GRID_LEN = 6
-GRID_PADDING = 5
+GRID_LEN = 6 #celdas por lado
+GRID_PADDING = 5 # separación de celdas
+
+########################
+# Puntuacion para ganar
+########################
 OBJECTIVE = 128
 
-# MOVIMIENTOS
-MOVEMENTS = ["Down","Left", "Up", "Right"]
-MAX_NUM_MOV = 10
+########################
+# Fichero log de salida
+########################
+FICHERO_LOG = "logs/log_automatic_play.json"
 
+############
+# Movimientos
+############
+MOVEMENTS = ["Down","Left", "Up", "Right"]
+
+############
+# Numeros
+############
 # Numeros que aparecen tras hacer un movimiento
 RANDOM_NUMBER_CHOICES = [2, 4]
 # Probabilidad de cada número de aparecer
@@ -21,6 +37,9 @@ TIME_WAIT_FINISH_GAME = 2 # segundos
 # Tiempo que espera la máquina en automatic_play.py para el siguiente movimientos
 TIME_CPU_NEXT_MOVEMENT = 0.1 #segundos
 
+############
+# Colores
+############
 BACKGROUND_COLOR_GAME = "#92877d"
 BACKGROUND_COLOR_CELL_EMPTY = "#9e948a"
 
@@ -45,4 +64,7 @@ CELL_COLOR_DICT = {2: "#776e65", 4: "#776e65", 8: "#f9f6f2", 16: "#f9f6f2",
                    4096: "#776e65", 8192: "#f9f6f2", 16384: "#776e65",
                    32768: "#776e65", 65536: "#f9f6f2", }
 
+#################
+# Fuente texto
+#################
 FONT = ("Verdana", 30, "bold")

@@ -153,6 +153,6 @@ Para ello, se usa una función start que llama al **Thread** (de la librería th
 
 Se ve que se puede prescindir del mainloop ya que el código no tiene que estar permanentemente en modo "escuchar" por si le damos una instrucción ya que nosotros sabemos cuando va haber una instrucción por lo que podemos hacer un **update** cuando esto suceda. Por eso cambia el paradigma del código, ya que ahora a cada cambio llamamos a **self.update()** que actualiza el estado del tablero.
 
-También realizamos un fichero JSON llamado log_movimientos.json, con el cual se guarda la matriz inicial y los movimientos realizados y el estado final (ganado o perdido) dentro de la carpeta **logs**.  
+También realizamos un fichero JSON llamado log_movimientos.json en la carpeta logs, con el cual se guarda la todas las matrices y los movimientos realizados. Esto se hace ya que cada ejecución es diferente y solo guardando los movimientos y la matriz incial no permitiría generar el mismo resultado ya que los números random que aparecen tras mover irían cambiando.  
 
-Para mejorar la visualización del juego automático mientras va jugando, se define un tiempo entre movimientos en <code>constants.py</code> con el nombre TIME_CPU_NEXT_MOVEMENT (se fija en 0.1 segundos). 
+Para mejorar la visualización del juego automático mientras va jugando, se define un tiempo entre movimientos en <code>constants.py</code> con el nombre TIME_CPU_NEXT_MOVEMENT (se fija en 0.1 segundos).
