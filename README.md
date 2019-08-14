@@ -113,3 +113,46 @@ Para hacer el RIGHT se pueden seguir diversas lógicas, una es primero rotar hac
 - **RIGHT option 2 = AH - [AH - L - H] - H**
 
 Notése que en los brackets hay las funciones de UP y DOWN implícitamente.
+
+# 3. Main_play.py
+
+Es el código principal, que permite jugar con las flechas del teclado hasta llegar al límite de puntuación.
+
+Al terminar, ya sea por victoria o derrota, se espera TIME_WAIT_FINISH_GAME segundos y se cierra sola la interfaz.
+
+Necesita diferentes códigos que importa:
+
+## 3.1 constants.py
+
+En el código <code>constants.py</code>  podemos modificar:
+- Puntuación objetiva para ganar (OBJETIVE)
+- Tamaño de la cuadrícula de juego (GRID_LEN)
+- Números que salen random al hacer un movimiento y sus probabilidades (RANDOM_NUMBER_CHOICES, PROBAB_NUMBER_CHOICES) de aparición.
+- Colores de textos, celdas, background, etc...
+- Tiempo con la ventana abierta del Tkinter cuando se termina la partida (TIME_WAIT_FINISH_GAME) en segundos
+
+## 3.2 movements.py
+En el código <code>movements.py</code> encontramos solo funciones:
+
+### 3.2.1 New game
+Inicializa la matriz con todo de 0 con el tamaño de grid indicado en <code>constants.py</code>
+
+### 3.2.2 Add_two
+Es una función multiuso, que nos permite generar los dos primeros números que aparecen para inicializar el juego (siempre son 2 números 2), pero también sirve para generar un número aleatorio de los (RANDOM_NUMBER_CHOICES) posibles usando las probabilidades definidas en <code>constants.py</code>. También se puede indicar cuantos números aleatorios se quieren con el argumento "times" aunque sólo se usa times = 2 para los dos primeros números 2 del inicio y luego, para los números aleatorios que van apareciendo ya se usa times = 1.
+
+### 3.2.3 Game_state
+Mira si el máximo de los números de la matriz, tras cada movimiento, llega al OBJETIVE. En tal caso retorna "win". Si no se ha llegado aún, mira si alguno de los movimientos ya explicados (up, down, left o right) produce algun cambio en la matriz (se puede realizar aún algun movimento). En caso afirmativo que exista algún movimiento posible, retorn "ok". En caso negativo, la partida ha terminado ya que no hay más movimientos y se retorna "lose". Los movimientos se han explicado en la sección 2. Movimientos.
+
+# 3. Automatic_play.py
+
+Código para que el ordenador juegue solo. Se sustituye el comando **bind** de Tkinter que permite "escuchar" al usuario cada vez que presiona una tecla para traducir la tecla a una instrucción.
+
+En nuestro caso, se programa un random player, que por cada turno elige randomly una dirección. Ahora ya no necesitamos el comando **bind** sinó que primero se optó por crear un Thread dentro del mainloop de Tkinter para procesar dentro del loop del mainloop, los eventos de generación de movimientos por parte de la CPU.
+
+Para ello, se usa una función start que llama al **Thread** (de la librería threading de Python) con el target apuntando a la función start_playing. La función start_playing mira el estado del juego, si está activo (no se ha ganado ni perdido) elige un movimiento de forma random y hace un update de las celdas para que la aplicación, cuando dentro del mainloop vaya a hacer un display de la matriz, haga display de la matriz con los cambios del movimiento realizado. Hemos escrito el código para que saque por pantalla los movimientos que va realizando.
+
+Se ve que se puede prescindir del mainloop ya que el código no tiene que estar permanentemente en modo "escuchar" por si le damos una instrucción ya que nosotros sabemos cuando va haber una instrucción por lo que podemos hacer un **update** cuando esto suceda. Por eso cambia el paradigma del código, ya que ahora a cada cambio llamamos a **self.update()** que actualiza el estado del tablero.
+
+También realizamos un fichero JSON llamado log_movimientos.json, con el cual se guarda la matriz inicial y los movimientos realizados y el estado final (ganado o perdido) dentro de la carpeta **logs**.  
+
+Para mejorar la visualización del juego automático mientras va jugando, se define un tiempo entre movimientos en <code>constants.py</code> con el nombre TIME_CPU_NEXT_MOVEMENT (se fija en 0.1 segundos). 

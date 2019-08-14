@@ -1,46 +1,40 @@
 import random
 from tkinter import Frame, Label, CENTER
 import time
+import numpy as np
 # Importamos codigos .py
 import movements as mov
 import constants as c
+import sys
 
+import threading
 
-class GameGrid(Frame):
+class AutomaticPlay(Frame):
     def __init__(self):
         ##################################
         # Crear frame de TKinter
         ##################################
         Frame.__init__(self)
         self.grid()
-        self.master.title('2048 by David')
-
-        ######################################################
-        # Activar una acción al pulsar una tecla de direccion
-        ######################################################
-        for arrow in c.MOVEMENTS:
-            self.master.bind("<{0}>".format(arrow), # si se teclea una arrow
-                lambda event, key_pressed = arrow: self.key_arrow(key_pressed))
-                # pasale a la funcion un argumento llamado key_pressed con el nombre de la arrow
-
-        #############################################
-        # # DESHACER MOVIMIENTO con la tecla "b"
-        #############################################
-        self.master.bind("<b>", self.key_back)
-
-        ##################################
-        # Linkar tecla arrow con funcion
-        ##################################
-        # El nombre de cada arrow llama a la funcion con su mismo nombre (getattrib)
-        # de la clase getattr llama a la funcion con el nombre "down" por ejemplo
-        self.commands = {}
-        for arrow in c.MOVEMENTS:
-            self.commands[arrow] = getattr(mov, arrow.lower())
-
+        self.master.title('2048 by David, AutomaticPlay')
+        self.movimientos = 0;
         ##################################
         # Crear array de celdas
         ##################################
         self.grid_cells = []
+
+        ##################################
+        # Log de la partida
+        ##################################
+        self.log = {}
+
+
+        ##################################
+        # Linkar tecla arrow con funcion
+        ##################################
+        self.commands = {'up': mov.up, 'down': mov.down,
+                        'left': mov.left, 'right': mov.right}
+
 
         ##################################
         # Inicializacion del juego
@@ -48,13 +42,48 @@ class GameGrid(Frame):
         #ESTADO ACTIVO:
         self.game_status_active = 0 # activo
         self.init_grid()
-        self.init_matrix() #matriz con 2 numeros 2
+        self.init_matrix()
         self.update_grid_cells()
 
         #########################################
-        # Resta a la espera de recibir teclas
+        # Resta a la espera de recibir órdenes
         #########################################
-        self.mainloop()
+        self.log["mov"] = []
+        self.start()
+        #self.mainloop()
+
+    ##################################
+    # Dar órdenes
+    ##################################
+    def start(self):
+        self.update()
+        if self.game_status_active == 0:
+            threading.Thread(target = self.start_playing()).start()
+
+    def start_playing(self):
+        time.sleep(c.TIME_CPU_NEXT_MOVEMENT)
+        if self.game_status_active == 0:
+            choice_movement = ["up", "down", "left", "right"]
+            movimiento = np.random.choice(choice_movement)
+            hay_movimiento = self.key_arrow(movimiento)
+
+            #Guardamos en el log el movimiento escogido
+            self.log["mov"].append(movimiento)
+
+            # Se puede seleccionar un movimiento que no haga nada
+            # este caso no lo queremos como output
+            if hay_movimiento:
+                self.update_grid_cells()
+                self.movimientos += 1
+
+            #Si se siguie jugando, vuelve a llamar el metodo start
+            if self.game_status_active == 0:
+                # Imprime el movimiento realizado
+                if hay_movimiento:
+                    print("movimiento: ", movimiento)
+
+                # Vuelve a correr el update y generar el thread de juego
+                self.start()
 
     def init_grid(self):
         # Creamos un cuadrado con un fondo de color game
@@ -88,15 +117,16 @@ class GameGrid(Frame):
 
     def init_matrix(self):
         # Llama al script mov y crea una matrix de zeros
-        # [[0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0], [0, 0, 0, 0]]
         self.matrix = mov.new_game(c.GRID_LEN)
 
         # HISTORICO de MATRICES para ir hacia atras en caso de pulsar tecla "b"
         self.history_matrixs = list()
 
         # Añade dos 2 en unas posiciones random (nunca se solaparans)
-        self.matrix = mov.add_two(self.matrix, times = 10)
+        self.matrix = mov.add_two(self.matrix, times = 2)
 
+        # Guardamos esa matriz inicial
+        self.log["mat"] = self.matrix
 
     def update_grid_cells(self):
         for i in range(c.GRID_LEN):
@@ -122,19 +152,6 @@ class GameGrid(Frame):
                         fg=color_font)
         self.update_idletasks()
 
-    # CONFIGURACION BOTON ATRAS
-    def key_back(self, event):
-        """
-        Si se pulsa la tecla b, vamos al histórico de movimientos y sacamos la matriz última que tengamos
-        Sirve como deshacer movimiento
-        """
-        if len(self.history_matrixs) > 1:
-            # Recuperamos la penultima matriz (la ultima es la actual por lo que no se considera un deshacer)
-            self.matrix = self.history_matrixs.pop(-2)
-            print("Going back to step:", len(self.history_matrixs))
-            self.update_grid_cells()
-        else:
-            print("No previous movements detected, please do a movement with arrows")
 
     def key_arrow(self, key_pressed):
         # Reemplaza la matrix por la matriz actualizada despues del movimiento
@@ -145,34 +162,52 @@ class GameGrid(Frame):
             # Record last move
             self.history_matrixs.append(self.matrix)
             self.update_grid_cells()
-            done = False # cambiamos el done por si afecta en la siguiente iteración
+            #done = False # cambiamos el done por si afecta en la siguiente iteración
 
             #############
             # GAME STATUS
             #############
             current_game_state = mov.game_state(self.matrix)
             if  current_game_state== "win":
-                self.grid_cells[1][1].configure(
-                    text="You", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
-                self.grid_cells[1][2].configure(
-                    text="Win!", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
-                print("YOU HAVE WON")
                 self.game_status_active = 1 # ganado
-                self.quit()
+                self.show_message()
+                self.after(c.TIME_WAIT_FINISH_GAME*1000, self.end_game())
 
             elif current_game_state == "lose":
-                self.grid_cells[1][1].configure(
-                    text="You", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
-                self.grid_cells[1][2].configure(
-                    text="Lose!", bg=c.BACKGROUND_COLOR_CELL_EMPTY)
-                print("YOU HAVE LOST")
                 self.game_status_active = 2 # perdido
-                self.quit()
+                self.show_message()
+                self.after(c.TIME_WAIT_FINISH_GAME*1000, self.end_game())
+        return done
 
+    def show_message(self):
+        if self.game_status_active == 1:
+            winning = True
+        else:
+            winning = False
+        self.grid_cells[1][1].configure(
+            text="You", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+            fg = c.COLOR_FONT_FINAL_MESSAGE)
+        if winning:
+            self.grid_cells[1][2].configure(
+                text="win!", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                fg = c.COLOR_FONT_FINAL_MESSAGE)
+        else:
+            self.grid_cells[1][2].configure(
+                text="lose!", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                fg = c.COLOR_FONT_FINAL_MESSAGE)
+        self.update_idletasks()
 
+    def end_game(self):
+        if self.game_status_active == 1:
+            print("GAME WON !")
+        else:
+            print("GAME LOST!")
 
-gamegrid = GameGrid()
-if gamegrid.game_status_active== 1:
-    print("SE HA GANADO")
-elif gamegrid.game_status_active== 2:
-    print("SE HA PERDIDO")
+        # Guardamos en el log el resultado de la partida
+        self.log["final"] = self.game_status_active
+        self.quit()
+
+    def exit_game(self):
+        sys.exit()
+
+gamegrid = AutomaticPlay()
