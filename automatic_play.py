@@ -67,7 +67,8 @@ class AutomaticPlay(Frame):
     def start(self):
         self.update()
         if self.game_status_active == 0:
-            threading.Thread(target = self.start_playing()).start()
+            print("NUM MOV", self.movimientos)
+            self.start_playing()
 
     def start_playing(self):
         time.sleep(c.TIME_CPU_NEXT_MOVEMENT)
@@ -79,17 +80,15 @@ class AutomaticPlay(Frame):
             #Guardamos en el log el movimiento escogido
             self.log["mov"].append(movimiento)
             self.log["mat"].append(np.array(self.matrix).tolist())
-            # Se puede seleccionar un movimiento que no haga nada
-            # este caso no lo queremos como output
-            if hay_movimiento:
-                self.update_grid_cells()
-                self.movimientos += 1
+
+            # Actualiza el numero de movimientos realizados
+            self.update_grid_cells()
+            self.movimientos += 1
 
             #Si se siguie jugando, vuelve a llamar el metodo start
             if self.game_status_active == 0:
                 # Imprime el movimiento realizado
-                if hay_movimiento:
-                    print("movimiento: ", movimiento)
+                print("movimiento: ", movimiento)
 
                 # Vuelve a correr el update y generar el thread de juego
                 self.start()
@@ -102,7 +101,7 @@ class AutomaticPlay(Frame):
 
         # creamos una fila antes para el score
         score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                     width=c.SIZE,
+                     width= c.SIZE ,
                      height=c.SIZE / c.GRID_WITH_SCORE)
         score_cell.grid(
             row = 0,
@@ -115,11 +114,12 @@ class AutomaticPlay(Frame):
         for i in range(0, c.GRID_WITH_SCORE): #fila
             grid_row = []
             if i == 0:
-                # SCORE ROW
+                # SCORE ROW: creamos una fila con una celda para el score
                 t_score = Label(master=score_cell, text="Score: {0}".format(self.game_score),
-                          bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                          bg=c.BACKGROUND_SCORE,
+                          fg=c.FONT_SCORE,
                           justify=CENTER, font=c.FONT,
-                          width=c.SIZE // c.GRID_WITH_SCORE,
+                          width=c.SIZE // (6),
                           height= 2)
 
                 t_score.grid()
@@ -130,8 +130,8 @@ class AutomaticPlay(Frame):
                 # Declaramos un objeto cell de la clase Frame con las dimensiones
                 # Cada celda tien longitud SIZE / numero de celdas
                 cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                             width=c.SIZE / (c.GRID_WITH_SCORE),
-                             height=c.SIZE / (c.GRID_WITH_SCORE))
+                             width=c.SIZE // (c.GRID_WITH_SCORE),
+                             height=c.SIZE // (c.GRID_WITH_SCORE))
                 cell.grid(row=i, column=j, padx=c.GRID_PADDING,
                            pady=c.GRID_PADDING)
                 # Para ese objeto cell, declaramos sus propiedades
@@ -147,14 +147,8 @@ class AutomaticPlay(Frame):
             # corresponde a la primera fila (cada subelemento de la lista será una columna)
             self.grid_cells.append(grid_row)
 
-        # # TODO SANITY CHECK
-        # print("DIM: ", len(self.grid_cells))
-        # for i in range(0, c.GRID_WITH_SCORE): #fila
-        #     print("DIM fila {0}: {1}".format(i, len(self.grid_cells[i])))
-
-
-        self.master.rowconfigure((0,1,2,3,4,5,6,7,8), weight=1)
-        self.master.columnconfigure((0,1,2,3,4,5,6), weight=1)
+        #self.master.rowconfigure((0,1,2,3,4,5,6,7,8), weight=1)
+        #self.master.columnconfigure((0,1,2,3,4,5,6), weight=1)
 
     def init_matrix(self):
         # Llama al script mov y crea una matrix de zeros
@@ -174,8 +168,9 @@ class AutomaticPlay(Frame):
             if i == 0:
                 # Update SCORE
                 self.grid_cells[i][0].configure(
-                text="Score: {0}".format(self.game_score,
-                bg=c.BACKGROUND_COLOR_CELL_EMPTY)
+                text="Score: {0}".format(self.game_score),
+                fg=c.FONT_SCORE,
+                bg=c.BACKGROUND_SCORE
                 )
                 continue
             for j in range(c.GRID_LEN):
@@ -230,19 +225,18 @@ class AutomaticPlay(Frame):
     def show_message(self):
         if self.game_status_active == 1:
             winning = True
+            color = c.WINING_BG
+            message = "You win!"
         else:
             winning = False
-        self.grid_cells[1][1].configure(
-            text="You", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-            fg = c.COLOR_FONT_FINAL_MESSAGE)
-        if winning:
-            self.grid_cells[1][2].configure(
-                text="win!", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                fg = c.COLOR_FONT_FINAL_MESSAGE)
-        else:
-            self.grid_cells[1][2].configure(
-                text="lose!", bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                fg = c.COLOR_FONT_FINAL_MESSAGE)
+            color = c.LOSING_BG
+            message = "You lost!"
+
+        # Update SCORE
+        self.grid_cells[0][0].configure(
+        text="{0} Score: {1}".format(message, self.game_score), #TODO
+        fg=c.FINAL_FONT, font = c.FONT_FINAL_MESSAGE, bg=color, width = c.SIZE // (5))
+
         self.update_idletasks()
 
     def end_game(self):

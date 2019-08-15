@@ -9,7 +9,7 @@ GRID_WITH_SCORE = GRID_LEN + 1
 ########################
 # Puntuacion para ganar
 ########################
-OBJECTIVE = 8
+OBJECTIVE = 1024
 
 ########################
 # Fichero log de salida
@@ -33,19 +33,35 @@ PROBAB_NUMBER_CHOICES = [0.7, 0.3]
 # Tiempos
 ############
 # Tiempo a esperar cuando se gana / pierde con la situación de la partida
-TIME_WAIT_FINISH_GAME = 2 # segundos
+TIME_WAIT_FINISH_GAME = 5 # segundos
 
 # Tiempo que espera la máquina en automatic_play.py para el siguiente movimientos
-TIME_CPU_NEXT_MOVEMENT = 1 #segundos
+TIME_CPU_NEXT_MOVEMENT = 0.01 #segundos
+
+
+####################
+# Scores colores
+####################
+# Score colores
+BACKGROUND_SCORE = "#00B1E7"
+
+#Font Score
+FONT_SCORE = "#37013C"
 
 ############
 # Colores
 ############
-BACKGROUND_COLOR_GAME = "#92877d"
-BACKGROUND_COLOR_CELL_EMPTY = "#9e948a"
+
+# Classic
+#BACKGROUND_COLOR_GAME = "#92877d"
+#BACKGROUND_COLOR_CELL_EMPTY = "#9e948a"
+
+# New
+BACKGROUND_COLOR_GAME = "#310038"
+BACKGROUND_COLOR_CELL_EMPTY = "#04E8F5"
 
 # Color font winning and losing game:
-COLOR_FONT_FINAL_MESSAGE = "#6B5B95"
+COLOR_FONT_FINAL_MESSAGE = "#37013C"
 
 #Color background
 BACKGROUND_COLOR_DICT = {2: "#eee4da", 4: "#ede0c8", 8: "#f2b179",
@@ -65,7 +81,13 @@ CELL_COLOR_DICT = {2: "#776e65", 4: "#776e65", 8: "#f9f6f2", 16: "#f9f6f2",
                    4096: "#776e65", 8192: "#f9f6f2", 16384: "#776e65",
                    32768: "#776e65", 65536: "#f9f6f2", }
 
+# Winning colores
+LOSING_BG = "#f70158"
+WINING_BG = "#00F883"
+FINAL_FONT = "#300034"
+
 #################
 # Fuente texto
 #################
-FONT = ("Verdana", 30, "bold")
+FONT = ("Verdana", 20, "bold")
+FONT_FINAL_MESSAGE = ("Verdana", 15, "bold")
