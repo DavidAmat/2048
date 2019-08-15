@@ -99,11 +99,6 @@ class AutomaticPlay(Frame):
         background = Frame(self, bg=c.BACKGROUND_COLOR_GAME,
                            width=c.SIZE, height=c.SIZE)
         background.grid() #lo pintamos
-        # creamos una fila antes para el score
-        score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                     width=c.SIZE,
-                     height=c.SIZE)
-        score_cell.grid(row = 0, column = 0, rowspan = 3)
 
         #Creamos la grid
         for i in range(1, c.GRID_LEN + 1): #fila
@@ -112,8 +107,8 @@ class AutomaticPlay(Frame):
                 # Declaramos un objeto cell de la clase Frame con las dimensiones
                 # Cada celda tien longitud SIZE / numero de celdas
                 cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                             width=c.SIZE / c.GRID_LEN,
-                             height=c.SIZE / c.GRID_LEN)
+                             width=c.SIZE / (c.GRID_LEN+1),
+                             height=c.SIZE / (c.GRID_LEN+1))
                 cell.grid(row=i, column=j, padx=c.GRID_PADDING,
                            pady=c.GRID_PADDING)
                 # Para ese objeto cell, declaramos sus propiedades
@@ -125,9 +120,20 @@ class AutomaticPlay(Frame):
                 #Generamos para cada fila, una lista de objetos label
                 grid_row.append(t)
 
-            # Lista de listas de cada celda, donde el primer elemento (que es una lista)
-            # corresponde a la primera fila (cada subelemento de la lista será una columna)
-            self.grid_cells.append(grid_row)
+        # Lista de listas de cada celda, donde el primer elemento (que es una lista)
+        # corresponde a la primera fila (cada subelemento de la lista será una columna)
+        self.grid_cells.append(grid_row)
+
+            # creamos una fila antes para el score
+            score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                         width=c.SIZE,
+                         height=c.SIZE / (c.GRID_LEN+1))
+            score_cell.grid(
+                row = 0,
+                column = c.GRID_LEN // 2,
+                columnspan = (c.GRID_LEN - 1),
+                padx=c.GRID_PADDING,
+                pady=c.GRID_PADDING )
 
     def init_matrix(self):
         # Llama al script mov y crea una matrix de zeros

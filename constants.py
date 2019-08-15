@@ -2,13 +2,13 @@
 # Tablero
 ############
 SIZE = 100
-GRID_LEN = 4 #celdas por lado
+GRID_LEN = 7 #celdas por lado
 GRID_PADDING = 5 # separación de celdas
 
 ########################
 # Puntuacion para ganar
 ########################
-OBJECTIVE = 16
+OBJECTIVE = 8
 
 ########################
 # Fichero log de salida
