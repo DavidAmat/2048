@@ -2,7 +2,7 @@
 # Tablero
 ############
 SIZE = 100
-GRID_LEN = 6 #celdas por lado
+GRID_LEN = 4 #celdas por lado
 GRID_PADDING = 5 # separación de celdas
 
 ########################
@@ -35,7 +35,7 @@ PROBAB_NUMBER_CHOICES = [0.7, 0.3]
 TIME_WAIT_FINISH_GAME = 2 # segundos
 
 # Tiempo que espera la máquina en automatic_play.py para el siguiente movimientos
-TIME_CPU_NEXT_MOVEMENT = 0.1 #segundos
+TIME_CPU_NEXT_MOVEMENT = 1 #segundos
 
 ############
 # Colores

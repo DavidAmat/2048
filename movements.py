@@ -45,7 +45,7 @@ def add_two(mat, times = 1, rand_num_choice = False):
 
 def game_state(mat):
     # Se pasa como argumento el objeto o clase importada (en ese caso sera mov de movements)
-    if np.array(mat).max() == c.OBJECTIVE:
+    if np.array(mat).max() >= c.OBJECTIVE:
         return 'win'
 
     #Se pierde si ningun movimiento produce un "done" TRUE

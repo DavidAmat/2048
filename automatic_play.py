@@ -1,5 +1,5 @@
 import random
-from tkinter import Frame, Label, CENTER
+from tkinter import Frame, Label, CENTER, Canvas
 import time
 import numpy as np
 # Importamos codigos .py
@@ -8,6 +8,7 @@ import constants as c
 import sys
 import json
 import threading
+from tkinter.messagebox import showinfo
 
 class AutomaticPlay(Frame):
     def __init__(self):
@@ -98,11 +99,16 @@ class AutomaticPlay(Frame):
         background = Frame(self, bg=c.BACKGROUND_COLOR_GAME,
                            width=c.SIZE, height=c.SIZE)
         background.grid() #lo pintamos
+        # creamos una fila antes para el score
+        score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                     width=c.SIZE,
+                     height=c.SIZE)
+        score_cell.grid(row = 0, column = 0, rowspan = 3)
 
         #Creamos la grid
-        for i in range(c.GRID_LEN): #fila
+        for i in range(1, c.GRID_LEN + 1): #fila
             grid_row = []
-            for j in range(c.GRID_LEN): #columna
+            for j in range(1, c.GRID_LEN + 1): #columna
                 # Declaramos un objeto cell de la clase Frame con las dimensiones
                 # Cada celda tien longitud SIZE / numero de celdas
                 cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
@@ -171,7 +177,6 @@ class AutomaticPlay(Frame):
             # Record last move
             self.history_matrixs.append(self.matrix)
             self.update_grid_cells()
-            #done = False # cambiamos el done por si afecta en la siguiente iteración
 
             #############
             # GAME STATUS
