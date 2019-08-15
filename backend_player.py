@@ -40,8 +40,14 @@ class BackendPlayer():
     def start_playing(self):
         if self.game_status_active == 0:
             choice_movement = ["up", "down", "left", "right"]
-            movimiento = np.random.choice(choice_movement)
-            hay_movimiento = self.key_arrow(movimiento)
+            hay_movimiento = False
+            while not hay_movimiento:
+                # Mientras no se mueva la matriz, buscaremos otro comando
+                movimiento = np.random.choice(choice_movement)
+                hay_movimiento = self.key_arrow(movimiento)
+
+                if self.game_status_active>0:
+                    return
 
             #Guardamos en el log el movimiento escogido
             self.log["mov"].append(movimiento)
@@ -51,9 +57,9 @@ class BackendPlayer():
             self.movimientos += 1
 
     def key_arrow(self, key_pressed):
+        hay_movimiento = False
         # Reemplaza la matrix por la matriz actualizada despues del movimiento
         self.matrix, done, self.game_score = self.commands[key_pressed](self.matrix, self.game_score)
-
         if done: # Si ha cambiado algo
             # añade un nuevo numero (numero random: ver movements.py)
             self.matrix = mov.add_two(self.matrix, rand_num_choice = True)
@@ -69,6 +75,7 @@ class BackendPlayer():
             elif current_game_state == "lose":
                 self.game_status_active = 2 # perdido
                 self.end_game(key_pressed)
+        return done
 
     def end_game(self, key_pressed):
         self.log["mov"].append(key_pressed)
