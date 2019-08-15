@@ -163,3 +163,15 @@ También realizamos un fichero **JSON** llamado log_movimientos.json en la carpe
 La idea es que un mismo script, cuando se generen muchas partidas, se conforme de varios diccionarios y se pueda estudiar los ganados y los perdidos.
 
 Para mejorar la visualización del juego automático mientras va jugando, se define un tiempo entre movimientos en <code>constants.py</code> con el nombre TIME_CPU_NEXT_MOVEMENT (se fija en 0.1 segundos).
+
+## 3.1 Finalmente se han implementado los siguientes cambios definitivos:
+
+- Se crea una fila en el grid_cells para el Score (que se va actualizando a cada movimiento).
+
+- Al finalizar la partida, el You win! o el You lost! se muestra en la pantall del score y se cambia el color con el mensaje y la puntuación final.
+
+- Se elimina la recursividad de la función start que llama a start_playing que a su vez volvía a llamar a start para el siguiente movimiento. Ahora se ha hecho con un while loop para evitar **RecursionErrors** al llegar a los 1000 movimientos.
+
+- Se cambia de colores el background y las celdas.
+
+# 4. Back-end player

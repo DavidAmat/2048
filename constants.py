@@ -2,14 +2,14 @@
 # Tablero
 ############
 SIZE = 100
-GRID_LEN = 7 #celdas por lado
+GRID_LEN = 6 #celdas por lado
 GRID_PADDING = 5 # separación de celdas
 GRID_WITH_SCORE = GRID_LEN + 1
 
 ########################
 # Puntuacion para ganar
 ########################
-OBJECTIVE = 1024
+OBJECTIVE = 32
 
 ########################
 # Fichero log de salida
@@ -36,7 +36,7 @@ PROBAB_NUMBER_CHOICES = [0.7, 0.3]
 TIME_WAIT_FINISH_GAME = 5 # segundos
 
 # Tiempo que espera la máquina en automatic_play.py para el siguiente movimientos
-TIME_CPU_NEXT_MOVEMENT = 0.01 #segundos
+TIME_CPU_NEXT_MOVEMENT = 0.2 #segundos
 
 
 ####################

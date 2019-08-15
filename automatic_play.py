@@ -5,10 +5,7 @@ import numpy as np
 # Importamos codigos .py
 import movements as mov
 import constants as c
-import sys
 import json
-import threading
-from tkinter.messagebox import showinfo
 
 class AutomaticPlay(Frame):
     def __init__(self):
@@ -154,9 +151,6 @@ class AutomaticPlay(Frame):
         # Llama al script mov y crea una matrix de zeros
         self.matrix = mov.new_game(c.GRID_LEN)
 
-        # HISTORICO de MATRICES para ir hacia atras en caso de pulsar tecla "b"
-        self.history_matrixs = list()
-
         # Añade dos 2 en unas posiciones random (nunca se solaparans)
         self.matrix = mov.add_two(self.matrix, times = 2)
 
@@ -203,8 +197,6 @@ class AutomaticPlay(Frame):
         if done: # Si ha cambiado algo
             # añade un nuevo numero (numero random: ver movements.py)
             self.matrix = mov.add_two(self.matrix, rand_num_choice = True)
-            # Record last move
-            self.history_matrixs.append(self.matrix)
             self.update_grid_cells()
 
             #############
@@ -213,16 +205,18 @@ class AutomaticPlay(Frame):
             current_game_state = mov.game_state(self.matrix)
             if  current_game_state== "win":
                 self.game_status_active = 1 # ganado
-                self.show_message()
+                self.show_message(key_pressed)
                 self.after(c.TIME_WAIT_FINISH_GAME*1000, self.end_game())
 
             elif current_game_state == "lose":
                 self.game_status_active = 2 # perdido
-                self.show_message()
+                self.show_message(key_pressed)
                 self.after(c.TIME_WAIT_FINISH_GAME*1000, self.end_game())
         return done
 
-    def show_message(self):
+    def show_message(self, key_pressed):
+        self.log["mov"].append(key_pressed)
+        self.log["mat"].append(np.array(self.matrix).tolist())
         if self.game_status_active == 1:
             winning = True
             color = c.WINING_BG
