@@ -65,10 +65,13 @@ class AutomaticPlay(Frame):
     # Dar órdenes
     ##################################
     def start(self):
-        self.update()
-        if self.game_status_active == 0:
-            print("NUM MOV", self.movimientos)
-            return self.start_playing()
+        while True:
+            if self.game_status_active == 0:
+                self.update()
+                print("NUM MOV", self.movimientos)
+                self.start_playing()
+            else:
+                break
 
     def start_playing(self):
         time.sleep(c.TIME_CPU_NEXT_MOVEMENT)
@@ -89,9 +92,6 @@ class AutomaticPlay(Frame):
             if self.game_status_active == 0:
                 # Imprime el movimiento realizado
                 print("movimiento: ", movimiento)
-
-                # Vuelve a correr el update y generar el thread de juego
-                self.start()
 
     def init_grid(self):
         # Creamos un cuadrado con un fondo de color game
