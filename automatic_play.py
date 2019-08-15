@@ -100,15 +100,38 @@ class AutomaticPlay(Frame):
                            width=c.SIZE, height=c.SIZE)
         background.grid() #lo pintamos
 
+        # creamos una fila antes para el score
+        score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                     width=c.SIZE,
+                     height=c.SIZE / c.GRID_WITH_SCORE)
+        score_cell.grid(
+            row = 0,
+            column = 0,
+            columnspan = c.GRID_LEN ,
+            padx=c.GRID_PADDING,
+            pady=c.GRID_PADDING )
+
         #Creamos la grid
-        for i in range(1, c.GRID_LEN + 1): #fila
+        for i in range(0, c.GRID_WITH_SCORE): #fila
             grid_row = []
-            for j in range(1, c.GRID_LEN + 1): #columna
+            if i == 0:
+                # SCORE ROW
+                t_score = Label(master=score_cell, text="Score: {0}".format(self.game_score),
+                          bg=c.BACKGROUND_COLOR_CELL_EMPTY,
+                          justify=CENTER, font=c.FONT,
+                          width=c.SIZE // c.GRID_WITH_SCORE,
+                          height= 2)
+
+                t_score.grid()
+                grid_row.append(t_score)
+                self.grid_cells.append(grid_row)
+                continue
+            for j in range(1, c.GRID_WITH_SCORE): #columna
                 # Declaramos un objeto cell de la clase Frame con las dimensiones
                 # Cada celda tien longitud SIZE / numero de celdas
                 cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                             width=c.SIZE / (c.GRID_LEN+1),
-                             height=c.SIZE / (c.GRID_LEN+1))
+                             width=c.SIZE / (c.GRID_WITH_SCORE),
+                             height=c.SIZE / (c.GRID_WITH_SCORE))
                 cell.grid(row=i, column=j, padx=c.GRID_PADDING,
                            pady=c.GRID_PADDING)
                 # Para ese objeto cell, declaramos sus propiedades
@@ -120,20 +143,18 @@ class AutomaticPlay(Frame):
                 #Generamos para cada fila, una lista de objetos label
                 grid_row.append(t)
 
-        # Lista de listas de cada celda, donde el primer elemento (que es una lista)
-        # corresponde a la primera fila (cada subelemento de la lista será una columna)
-        self.grid_cells.append(grid_row)
+            # Lista de listas de cada celda, donde el primer elemento (que es una lista)
+            # corresponde a la primera fila (cada subelemento de la lista será una columna)
+            self.grid_cells.append(grid_row)
 
-            # creamos una fila antes para el score
-            score_cell = Frame(background, bg=c.BACKGROUND_COLOR_CELL_EMPTY,
-                         width=c.SIZE,
-                         height=c.SIZE / (c.GRID_LEN+1))
-            score_cell.grid(
-                row = 0,
-                column = c.GRID_LEN // 2,
-                columnspan = (c.GRID_LEN - 1),
-                padx=c.GRID_PADDING,
-                pady=c.GRID_PADDING )
+        # # TODO SANITY CHECK
+        # print("DIM: ", len(self.grid_cells))
+        # for i in range(0, c.GRID_WITH_SCORE): #fila
+        #     print("DIM fila {0}: {1}".format(i, len(self.grid_cells[i])))
+
+
+        self.master.rowconfigure((0,1,2,3,4,5,6,7,8), weight=1)
+        self.master.columnconfigure((0,1,2,3,4,5,6), weight=1)
 
     def init_matrix(self):
         # Llama al script mov y crea una matrix de zeros
@@ -149,9 +170,16 @@ class AutomaticPlay(Frame):
         self.log["mat"].append(np.array(self.matrix).tolist())
 
     def update_grid_cells(self):
-        for i in range(c.GRID_LEN):
+        for i in range(c.GRID_WITH_SCORE):
+            if i == 0:
+                # Update SCORE
+                self.grid_cells[i][0].configure(
+                text="Score: {0}".format(self.game_score,
+                bg=c.BACKGROUND_COLOR_CELL_EMPTY)
+                )
+                continue
             for j in range(c.GRID_LEN):
-                new_number = self.matrix[i][j]
+                new_number = self.matrix[i-1][j]
                 # Mira si en esa celda ya hay un numero o hay un 0
                 if new_number == 0:
                     #Pintala como empty

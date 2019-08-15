@@ -4,6 +4,7 @@
 SIZE = 100
 GRID_LEN = 7 #celdas por lado
 GRID_PADDING = 5 # separación de celdas
+GRID_WITH_SCORE = GRID_LEN + 1
 
 ########################
 # Puntuacion para ganar
