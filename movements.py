@@ -92,7 +92,7 @@ def displacement_numbers(mat):
                 count += 1
     return (new, done)
 
-def merge_numbers(mat, game_score):
+def merge_numbers(mat, game_score = 0):
     """
     Suma los números de cada fila que sean iguales y consecutivos, dejando el segundo sumando a 0
     """
@@ -125,7 +125,7 @@ def ro(mat, cw = True, num = 1): #cw: clockwise: True or False, #num: number of 
 #           MOVIMIENTO LEFT
 ############################################
 
-def left(game, game_score):
+def left(game, game_score = 0):
     """
     1 - mover al maximo a la izquierda todos los numeros
     2 - Sumamos los iguales dejando 0 en el segundo sumando
@@ -137,7 +137,7 @@ def left(game, game_score):
     game_final = displacement_numbers(game_merged)[0]
     return (game_final, done_disp or done_merge, game_score)
 
-def down(game, game_score):
+def down(game, game_score = 0):
     """
     C - L - UC
     """
@@ -146,7 +146,7 @@ def down(game, game_score):
     game_final = ro(left_game, cw = False) #undo the rotation
     return game_final, done, game_score
 
-def up(game, game_score):
+def up(game, game_score = 0):
     """
     UC - L - C
     """
@@ -155,7 +155,7 @@ def up(game, game_score):
     game_final = ro(left_game) #undo the rotation
     return game_final, done, game_score
 
-def right(game, game_score):
+def right(game, game_score = 0):
     """
     C - C - L - UC - UC
     """

@@ -153,7 +153,7 @@ class GameGrid(Frame):
 
     def key_arrow(self, key_pressed):
         # Reemplaza la matrix por la matriz actualizada despues del movimiento
-        self.matrix, done  = self.commands[key_pressed](self.matrix)
+        self.matrix, done, _ = self.commands[key_pressed](self.matrix)
         if done: # Si ha cambiado algo
             # añade un nuevo numero (numero random: ver movements.py)
             self.matrix = mov.add_two(self.matrix, rand_num_choice = True)

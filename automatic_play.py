@@ -68,7 +68,7 @@ class AutomaticPlay(Frame):
         self.update()
         if self.game_status_active == 0:
             print("NUM MOV", self.movimientos)
-            self.start_playing()
+            return self.start_playing()
 
     def start_playing(self):
         time.sleep(c.TIME_CPU_NEXT_MOVEMENT)
