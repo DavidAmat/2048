@@ -175,3 +175,13 @@ Para mejorar la visualización del juego automático mientras va jugando, se def
 - Se cambia de colores el background y las celdas.
 
 # 4. Back-end player
+
+Genera un fichero LOG con el histórico de matrices, de scores, y el resultado final de la partida y los movimientos realizados.
+
+Este código será llamado por el Front-End para crear la partida y terminarla, y luego hacer un visualizado
+
+# 5. Front-end player
+
+Es la aplicación que corremos para generar una partida (a través de la clase BackendPlayer importada del <code>backend_player.py</code> y que hace un display del juego. Se ha puesto todo en el mismo código para asegurarnos que ambos códigos usan la misma configuración de <code>constants.py</code> ya que si corriesemos el backend y modificamos el constants, luego, al leer el fichero LOG para visualizar el juego no concordarían ciertos datos (dimensiones de la grid por ejemplo).
+
+Se ha calculado el tiempo que tarda en jugar una partida a 2048 y con un tamaño de 6x6 tarda unos 0.26 segundos. 

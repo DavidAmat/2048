@@ -9,7 +9,7 @@ GRID_WITH_SCORE = GRID_LEN + 1
 ########################
 # Puntuacion para ganar
 ########################
-OBJECTIVE = 32
+OBJECTIVE = 2048
 
 ########################
 # Fichero log de salida
@@ -36,7 +36,7 @@ PROBAB_NUMBER_CHOICES = [0.7, 0.3]
 TIME_WAIT_FINISH_GAME = 5 # segundos
 
 # Tiempo que espera la máquina en automatic_play.py para el siguiente movimientos
-TIME_CPU_NEXT_MOVEMENT = 0.2 #segundos
+TIME_CPU_NEXT_MOVEMENT = 0.05 #segundos
 
 
 ####################

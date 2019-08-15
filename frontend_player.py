@@ -7,6 +7,7 @@ from tkinter import Frame, Label, CENTER, Canvas
 # Importamos codigos .py
 import movements as mov
 import constants as c
+import backend_player as BK
 
 def read_json(filename):
     with open(filename) as json_file:
@@ -154,4 +155,11 @@ class FrontEndPlay(Frame):
         time.sleep(c.TIME_WAIT_FINISH_GAME)
         self.quit()
 
-FrontEndPlay()
+# Hacemos jugar a la maquina
+start_timer = time.time()
+BK.BackendPlayer()
+end_timer = time.time()
+
+print("Tiempo juego:", round(end_timer - start_timer,4))
+# Visualizamos la partida
+#FrontEndPlay()

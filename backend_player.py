@@ -83,6 +83,6 @@ class BackendPlayer():
         #Guarda el fichero en JSON con el encoding UTF-8
         with open(c.FICHERO_LOG, 'w') as f:
             json.dump(self.log, f)
-        sys.exit()
+        #sys.exit()
 
 BackendPlayer()
