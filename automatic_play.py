@@ -24,6 +24,12 @@ class AutomaticPlay(Frame):
         self.grid_cells = []
 
         ##################################
+        # Score
+        ##################################
+        self.game_score = 0;
+        # para cada suma (i.e 8+8 se sumará 16 al game_score)
+
+        ##################################
         # Log de la partida
         ##################################
         self.log = {}
@@ -51,6 +57,9 @@ class AutomaticPlay(Frame):
         ###################################################
         self.start()
 
+
+
+
     ##################################
     # Dar órdenes
     ##################################
@@ -69,7 +78,6 @@ class AutomaticPlay(Frame):
             #Guardamos en el log el movimiento escogido
             self.log["mov"].append(movimiento)
             self.log["mat"].append(np.array(self.matrix).tolist())
-            print(self.log)
             # Se puede seleccionar un movimiento que no haga nada
             # este caso no lo queremos como output
             if hay_movimiento:
@@ -155,7 +163,8 @@ class AutomaticPlay(Frame):
 
     def key_arrow(self, key_pressed):
         # Reemplaza la matrix por la matriz actualizada despues del movimiento
-        self.matrix, done  = self.commands[key_pressed](self.matrix)
+        self.matrix, done, self.game_score = self.commands[key_pressed](self.matrix, self.game_score)
+
         if done: # Si ha cambiado algo
             # añade un nuevo numero (numero random: ver movements.py)
             self.matrix = mov.add_two(self.matrix, rand_num_choice = True)
@@ -200,14 +209,17 @@ class AutomaticPlay(Frame):
     def end_game(self):
         if self.game_status_active == 1:
             print("GAME WON !")
+            print("SCORE", self.game_score)
         else:
             print("GAME LOST!")
+            print("SCORE", self.game_score)
 
         #####################
         # LOG
         #####################
         # Guardamos en el log el resultado de la partida
         self.log["final"] = int(self.game_status_active)
+        self.log["score"] = int(self.game_score)
         #Guarda el fichero en JSON con el encoding UTF-8
         with open(c.FICHERO_LOG, 'w') as f:
             json.dump(self.log, f)

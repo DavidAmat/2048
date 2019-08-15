@@ -52,8 +52,8 @@ def game_state(mat):
     # Llamamos todas las funciones de movimiento a ver si alguna da un done = TRUE
     done_state = False
     for arrow in c.MOVEMENTS:
-        # Por ejemplo, left(mat) dara como ouptut: mat, done
-        _, done_arrow = eval(arrow.lower() + '(mat)')
+        # Por ejemplo, left(mat,game_score ficticio) dara como ouptut: mat, done, _(game_score)
+        _ , done_arrow, _ = eval(arrow.lower() + '(mat,0)')
         done_state |= done_arrow # si hay un movimiento posible, keep playing
         if done_state: break  # evita hacer todas las simulaciones si una ya da TRUE
 
@@ -92,19 +92,21 @@ def displacement_numbers(mat):
                 count += 1
     return (new, done)
 
-def merge_numbers(mat):
+def merge_numbers(mat, game_score):
     """
     Suma los números de cada fila que sean iguales y consecutivos, dejando el segundo sumando a 0
     """
     done = False
     for i in range(c.GRID_LEN):
         for j in range(c.GRID_LEN-1): # la ultima columna j, no tiene una columna a su derecha (j+1)
-            if mat[i][j] == mat[i][j+1] and mat[i][j] != 0: # si son iguales, y esta igualdad son numeros > 0, se suman
+            celda = mat[i][j]; celda_derecha = mat[i][j+1]
+            if celda == celda_derecha and celda != 0: # si son iguales, y esta igualdad son numeros > 0, se suman
                 mat[i][j] *= 2
+                game_score += celda*2 #suma los puntos
                 mat[i][j+1] = 0 # se deja la de la derecha vacía, esto hace que se necesite hacer otro displacement para llenar ese hueco
                 # esto tambien hace que al leer la siguiente columna, se lea un 0, y no el numero que estaba
                 done = True
-    return (mat, done)
+    return (mat, done, game_score)
 
 def ro(mat, cw = True, num = 1): #cw: clockwise: True or False, #num: number of rotations
     """
@@ -123,7 +125,7 @@ def ro(mat, cw = True, num = 1): #cw: clockwise: True or False, #num: number of 
 #           MOVIMIENTO LEFT
 ############################################
 
-def left(game):
+def left(game, game_score):
     """
     1 - mover al maximo a la izquierda todos los numeros
     2 - Sumamos los iguales dejando 0 en el segundo sumando
@@ -131,33 +133,33 @@ def left(game):
         se vuelve a aplicar sin importar el done o no (no importa si mueve a alguien o no ahora)
     """
     game_disp, done_disp = displacement_numbers(game)
-    game_merged, done_merge = merge_numbers(game_disp) #la salida es una tupla (mat, done)
+    game_merged, done_merge, game_score = merge_numbers(game_disp, game_score) #la salida es una tupla (mat, done)
     game_final = displacement_numbers(game_merged)[0]
-    return (game_final, done_disp or done_merge)
+    return (game_final, done_disp or done_merge, game_score)
 
-def down(game):
+def down(game, game_score):
     """
     C - L - UC
     """
     rotate_game = ro(game) #rotate clockwise
-    left_game, done = left(rotate_game) #apply left
+    left_game, done, game_score = left(rotate_game, game_score) #apply left
     game_final = ro(left_game, cw = False) #undo the rotation
-    return game_final, done
+    return game_final, done, game_score
 
-def up(game):
+def up(game, game_score):
     """
     UC - L - C
     """
     rotate_game = ro(game, cw = False) #rotate anti-clockwise
-    left_game, done = left(rotate_game) #apply left
+    left_game, done, game_score = left(rotate_game, game_score) #apply left
     game_final = ro(left_game) #undo the rotation
-    return game_final, done
+    return game_final, done, game_score
 
-def right(game):
+def right(game, game_score):
     """
     C - C - L - UC - UC
     """
     rotate_game = ro(game,cw=True, num =2) #double rotation
-    left_game, done = left(rotate_game) #apply left
+    left_game, done, game_score = left(rotate_game, game_score) #apply left
     game_final = ro(left_game, cw = False, num = 2) #undo the rotation
-    return game_final, done
+    return game_final, done, game_score
