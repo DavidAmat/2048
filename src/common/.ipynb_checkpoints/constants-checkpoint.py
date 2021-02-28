@@ -10,16 +10,7 @@ GRID_WITH_SCORE = GRID_LEN + 1
 # Puntuacion para ganar
 ########################
 OBJECTIVE = 2048
-
-########################
-# Fichero log de salida
-########################
-FICHERO_LOG = "logs/log_automatic_play.json"
-
-############
-# Movimientos
-############
-MOVEMENTS = ["Down","Left", "Up", "Right"]
+GAME_WIN_RATE = 0.8 # 80% of the games we play, we win
 
 ############
 # Numeros
@@ -28,6 +19,15 @@ MOVEMENTS = ["Down","Left", "Up", "Right"]
 RANDOM_NUMBER_CHOICES = [2, 4]
 # Probabilidad de cada número de aparecer
 PROBAB_NUMBER_CHOICES = [0.7, 0.3]
+
+
+
+# ////////////////////////////////////////// #
+# ////////////////////////////////////////// #
+#     Front - End
+# ////////////////////////////////////////// #
+# ////////////////////////////////////////// #
+
 
 ############
 # Tiempos
