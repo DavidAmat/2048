@@ -1,8 +1,13 @@
 import numpy as np
 import src.common.constants as c
 
-class Movements():
 
+class Movements:
+    """
+    Class with the basics of
+    2048 matrix movements in backend
+
+    """
     def __init__(self):
         pass
 
@@ -12,7 +17,7 @@ class Movements():
         Desplaza todos los numeros a la izquierda de la matriz
         """
 
-        new = np.zeros(mat.shape) # crea una matrix de 0 de AxA (donde A es la c.GRID_LEN)
+        new = np.zeros(mat.shape)  # crea una matrix de 0 de AxA (donde A es la c.GRID_LEN)
         done = False
         for i in range(c.GRID_LEN):
             count = 0
@@ -29,10 +34,10 @@ class Movements():
 
                     # Suma al count una posicion ya que ya se ha movido a la izquerda de todo (columna 0) ese elemento
                     count += 1
-        return (new, done)
+        return new, done
 
     @staticmethod
-    def merge_numbers(mat, game_score = 0):
+    def merge_numbers(mat, added_merge=0):
         """
         Sum consecutive equal numbers (x) in a row
         ending with the second position being 0
@@ -41,20 +46,20 @@ class Movements():
         """
         num_merges = 0
         for i in range(c.GRID_LEN):
-            for j in range(c.GRID_LEN -1): # la ultima columna j, no tiene una columna a su derecha (j+1)
+            for j in range(c.GRID_LEN-1):  # la ultima columna j, no tiene una columna a su derecha (j+1)
                 celda = mat[i][j]
-                celda_derecha = mat[i][j +1]
-                if celda == celda_derecha and celda != 0: # si son iguales, y esta igualdad son numeros > 0, se suman
+                celda_derecha = mat[i][j+1]
+                if celda == celda_derecha and celda != 0:  # si son iguales, y esta igualdad son numeros > 0, se suman
                     merge_val = celda + celda_derecha
                     mat[i][j] = merge_val
-                    game_score += merge_val  # suma los puntos
-                    mat[i][j+1] = 0 # se deja la de la derecha vacía, esto hace que se necesite hacer otro displacement para llenar ese hueco
+                    added_merge += merge_val  # suma los puntos
+                    mat[i][j+1] = 0  # se deja la de la derecha vacía, esto hace que se necesite hacer otro displacement para llenar ese hueco
                     # esto tambien hace que al leer la siguiente columna, se lea un 0, y no el numero que estaba
                     num_merges += 1
-        return (mat, num_merges, game_score)
+        return mat, num_merges, added_merge
 
     @staticmethod
-    def perform_movement(game, game_score):
+    def perform_movement(game, added_merge):
         """
         1 - mover al maximo a la izquierda todos los numeros
         2 - Sumamos los iguales dejando 0 en el segundo sumando
@@ -62,12 +67,12 @@ class Movements():
             se vuelve a aplicar sin importar el done o no (no importa si mueve a alguien o no ahora)
         """
         game_disp, done_disp = Movements.displacement_numbers(game)
-        game_merged, num_merges, game_score = Movements.merge_numbers(game_disp, game_score)
+        game_merged, num_merges, added_merge = Movements.merge_numbers(game_disp, added_merge)
         game_final = Movements.displacement_numbers(game_merged)[0]
-        return (game_final, done_disp, num_merges, game_score)
+        return game_final, done_disp | num_merges>0, num_merges, added_merge
 
     @staticmethod
-    def ro(mat, cw = True, num = 1):  # cw: clockwise: True or False, #num: number of rotations
+    def ro(mat, cw=True, num=1):  # cw: clockwise: True or False, #num: number of rotations
         """
         Rota 90º las matrices para que las operaciones UP, DOWN y RIGHT se puedan hacer con la de LEFT
         """
@@ -81,35 +86,35 @@ class Movements():
         return rot_mat
 
     @staticmethod
-    def left(game, game_score = 0):
-        return Movements.perform_movement(game, game_score)
+    def left(game, added_merge=0):
+        return Movements.perform_movement(game, added_merge)
 
     @staticmethod
-    def down(game, game_score = 0):
+    def down(game, added_merge=0):
         """
         C - L - UC
         """
         rotate_game = Movements.ro(game)  # rotate clockwise
-        left_game, done, num_merges, game_score = Movements.left(rotate_game, game_score)  # apply left
+        left_game, done, num_merges, added_merge = Movements.left(rotate_game, added_merge)  # apply left
         game_final = Movements.ro(left_game, cw = False)  # undo the rotation
-        return game_final, done, num_merges, game_score
+        return game_final, done, num_merges, added_merge
 
     @staticmethod
-    def up(game, game_score = 0):
+    def up(game, added_merge=0):
         """
         UC - L - C
         """
         rotate_game = Movements.ro(game, cw = False)  # rotate anti-clockwise
-        left_game, done, num_merges, game_score = Movements.left(rotate_game, game_score)  # apply left
+        left_game, done, num_merges, added_merge = Movements.left(rotate_game, added_merge)  # apply left
         game_final = Movements.ro(left_game)  # undo the rotation
-        return game_final, done, num_merges, game_score
+        return game_final, done, num_merges, added_merge
 
     @staticmethod
-    def right(game, game_score = 0):
+    def right(game, added_merge=0):
         """
         C - C - L - UC - UC
         """
-        rotate_game = Movements.ro(game ,cw=True, num =2)  # double rotation
-        left_game, done, num_merges, game_score = Movements.left(rotate_game, game_score)  # apply left
-        game_final = Movements.ro(left_game, cw = False, num = 2)  # undo the rotation
-        return game_final, done, num_merges, game_score
+        rotate_game = Movements.ro(game, cw=True, num=2)  # double rotation
+        left_game, done, num_merges, added_merge = Movements.left(rotate_game, added_merge)  # apply left
+        game_final = Movements.ro(left_game, cw=False, num=2)  # undo the rotation
+        return game_final, done, num_merges, added_merge

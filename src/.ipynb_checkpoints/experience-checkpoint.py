@@ -44,8 +44,6 @@ class ExperienceSource:
 
             # Take the choosen action
             start_matrix, end_matrix, done, reward, game_stat = self.env.step(action_id)
-            
-            # If not done (action not allowed), iterate to the second most probable action
 
             # fill the history of steps
             self.history.append(ExperienceEpisode(state=start_matrix, action=action_id,

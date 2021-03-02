@@ -17,11 +17,12 @@ GAME_WIN_RATE = 0.8  # 80% of the games we play, we win
 ##############################
 # Network
 ##############################
-STATE_REPR = "log2"
+STATE_REPR = "bin"
+BINARY_POSITIONS = 15
 LEARNING_RATE = 0.01
-GAMMA = 0.99
+GAMMA = 0.7
 EPOCHS = 1000000
-BATCHS = 4  # episodes per epoch
+BATCHS = 25  # episodes per epoch
 
 ############
 # Numeros

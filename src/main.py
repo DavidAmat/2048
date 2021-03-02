@@ -18,14 +18,15 @@ warnings.filterwarnings("ignore")
 
 # Game initialize
 env = Env(c.GRID_LEN)
-model = Model(c.GRID_LEN**2, len(env.actions))
-eps = EpsilonPolicy(eps_start=0, eps_decay=1, eps_final=0)
-agent = PolicyAgent(model=model, num_actions=len(env.actions))
+eps = EpsilonPolicy(eps_start=0.8, eps_decay=200, eps_final=0.01)
+input_size = c.BINARY_POSITIONS * c.GRID_LEN**2 if c.STATE_REPR == "bin" else c.GRID_LEN**2
+model = Model(input_size, len(env.actions))
+agent = PolicyAgent(model=model, num_actions=len(env.actions), state_repr=c.STATE_REPR)
 exp = ExperienceSource(env, agent, eps)
 qv = QValueCalc()
 
 # Training
-version = "v2-log2"
+version = "REINF-v1-log2"
 writer = SummaryWriter(comment=f"-2048-{version}", log_dir=f"runs/{version}")
 # optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
 optimizer = optim.RMSprop(model.parameters(), lr=c.LEARNING_RATE, alpha=0.99)
@@ -44,24 +45,14 @@ mean_wins = 0
 ################
 #   Epochs
 ################
-start_time = time.time()
+
 while epoch_idx < c.EPOCHS:
 
-    # For each step in the episode, keep track also of states, actions, rewards -> qvals
-    batch_states, batch_actions, batch_rewards = [], [], []
-
     # Control
-    end_time = time.time()
-
-    if ((epoch_idx % 1) == 0) & (epoch_idx > 0):
-        print("Epoch: ", epoch_idx,
-              ", Game_scores_mean: ", np.int_(np.mean(game_scores)),
-              ", Mean reward: ", np.round(np.mean(batch_rewards), 2),
-              ", Mean wins: ", mean_wins,
-              ", Exec time epoch: ", round(end_time-start_time, 2))
-
-    # Re-run timer
     start_time = time.time()
+
+    # For each step in the episode, keep track also of states, actions, rewards -> qvals
+    batch_states, batch_actions, batch_rewards, batch_transf_states = [], [], [], []
 
     ###############
     # Batchs
@@ -70,7 +61,7 @@ while epoch_idx < c.EPOCHS:
     batch_episodes = 0
 
     # For each batch
-    for _ in range(c.BATCHS):
+    for batch_id in range(c.BATCHS):
 
         # Generate a episode
         exp.populate_episode(epoch_idx)
@@ -84,6 +75,7 @@ while epoch_idx < c.EPOCHS:
 
             # Fill with experience data
             batch_states.append(exp_step.state)
+            batch_transf_states.append(agent.preprocess(exp_step.state).data.numpy())  # save as numpy the transformed game matrix
             batch_actions.append(int(exp_step.action))
             batch_rewards.append(exp_step.reward)
 
@@ -103,13 +95,17 @@ while epoch_idx < c.EPOCHS:
         game_stat_final = 0 if exp.env.game_stat == -1 else 1
         game_wins.append(game_stat_final)
 
+        # Reset the board to play another episode
+        # inside this batch (we play BATCHS episodes in this batch)
+        exp.reset()
+
         # Inform Tensorboard
-    mean_rewards = float(np.mean(game_scores[-400:]))
-    mean_wins = np.round(float(np.mean(game_wins[-400:])) ,3)
-    writer.add_scalar("mean_100_scores", mean_rewards, epoch_idx)
-    writer.add_scalar("game_score", game_score_final, epoch_idx)
-    writer.add_scalar("steps", steps, epoch_idx)
+    mean_game_scores = float(np.mean(game_scores[-c.BATCHS:]))
+    mean_wins = np.round(float(np.mean(game_wins[-c.BATCHS:])) ,3)
+    mean_steps = np.round(float(np.mean(steps_reach[-c.BATCHS:])) ,3)
+    writer.add_scalar("mean_game_scores", mean_game_scores, epoch_idx)
     writer.add_scalar("mean_wins", mean_wins, epoch_idx)
+    writer.add_scalar("mean_steps", mean_steps, epoch_idx)
 
     # When the problem is solved stop training
     if (mean_wins > c.GAME_WIN_RATE) & (epoch_idx > 20):
@@ -131,10 +127,9 @@ while epoch_idx < c.EPOCHS:
     tensor_qvals = torch.FloatTensor(batch_qvals)
 
     # Forward to the network to get logits
-    # we will forwar tensor states with the following shape
+    # we will forward tensor states with the following shape
     # [#steps, c.GRID_LEN * c.GRID_LEN]
-    logits = model(tensor_states.view(-1,
-                                      torch.prod(torch.tensor(tensor_states.shape[-2:]) ,0).item()))
+    logits = model(tensor_states.view(-1, input_size))
 
     # Convert logits to log_softmax
     log_softmax = F.log_softmax(logits, dim=1)
@@ -154,6 +149,19 @@ while epoch_idx < c.EPOCHS:
     # Backpropagate
     loss_mean.backward()
     optimizer.step()
+
+    # Control
+    end_time = time.time()
+
+    if ((epoch_idx % 1) == 0) & (epoch_idx > 0):
+        print("Epoch: ", epoch_idx,
+              ", Game_scores_mean: ", mean_game_scores,
+              ", Mean reward: ", np.round(np.mean(batch_rewards), 2),
+              ", Mean wins: ", mean_wins,
+              ", Mean steps: ", mean_steps,
+              ", Exec time epoch: ", round(end_time-start_time, 2),
+              ", Epsilon: ", np.round(eps.get_epsilon(epoch_idx),3)
+              )
 
     # Reset the experience source and add epoch counter
     exp.reset()
