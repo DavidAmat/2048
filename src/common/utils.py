@@ -1,8 +1,24 @@
+import numpy as np
+
 class QValueCalc:
     def __init__(self):
         pass
+    
+    def __call__(self, rew, win = 10):
+        """
+        Lineal gamma discount on future state rewards
+        """
+        win = int(win)
+        if not isinstance(rew, np.ndarray):
+            rew = np.array(rew)
+        gamma_vec = np.array([(win - idx)  / win for idx in range(win)])
+        result = []
+        for idx in range(rew.shape[0]):
+            rew_win = rew[idx:idx+win]
+            result.append(np.round(np.sum(rew_win*gamma_vec[:rew_win.shape[0]]),3))
+        return result
 
-    def __call__(self, rewards, gamma):
+    def old(self, rewards, gamma):
         """
         Calculates the discounted total reward for every step
         rewards: list of rewards for the whole episodes

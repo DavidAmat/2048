@@ -3,3 +3,6 @@
 
 # python
 *.pyc
+src/runs/*
+*checkpoint.py
+*checkpoint.ipynb

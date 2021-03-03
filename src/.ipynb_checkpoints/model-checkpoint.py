@@ -32,10 +32,10 @@ class Model(nn.Module):
         """
         x = self.fc1(state)
         x = self.act1(x)
-        x = self.bn1(x)
+        #x = self.bn1(x)
         x = self.fc2(x)
         x = self.act2(x)
-        x = self.bn2(x)
+        #x = self.bn2(x)
         x = self.fc3(x)
         x = self.act3(x)
         return self.fc4(x)

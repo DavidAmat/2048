@@ -21,6 +21,12 @@ class Env:
                         1: Movements.down,
                         2: Movements.left,
                         3: Movements.right}
+        
+        # Mask of positions penalties
+        self.mask_position_val = np.ones((c.GRID_LEN,c.GRID_LEN))
+        for pp in [-1,0]:
+            self.mask_position_val[:,pp] -= 1
+            self.mask_position_val[pp,:] -= 1
 
         # Log in a list all the matrices in each step
         self.log = defaultdict(list)
@@ -97,6 +103,18 @@ class Env:
                 self.game_stat = 0
             else:
                 self.game_stat = -1
+                
+    @staticmethod
+    def _calc_penalty_max_position(matrix, mask_position_val):
+        """
+        Caclulates the penalty of the maximum position
+        """
+        # Position of the max
+        pos = np.where(matrix == matrix.max())
+        pos = [xx[0] for xx in pos]
+        
+        # Mask of the positions penalties
+        return np.max(matrix) * mask_position_val[pos[0], pos[1]]
 
     # Play step
     def step(self, action_id):
@@ -117,10 +135,22 @@ class Env:
         #      REWARD
         #########################
         # New definition of reward counting merges and number of 0
-        collapsed_cells = np.log2(added_merge)
-        penalty_cell_move = c.GRID_LEN**2 - np.sum(self.matrix == start_matrix)
-        penalty_impossible_move = 99 if not done else 0
-        reward = collapsed_cells - penalty_cell_move - penalty_impossible_move
+        #collapsed_cells = np.log2(added_merge) if added_merge>0 else 0
+        collapsed_cells = added_merge
+        #penalty_cell_move = c.GRID_LEN**2 - np.sum(self.matrix == start_matrix)
+        number_of_zeros_final = np.where(self.matrix == 0)[0].shape[0]
+        number_of_zeros_initial = np.where(start_matrix == 0)[0].shape[0]
+        free_zeros = number_of_zeros_final - number_of_zeros_initial
+        reward_free_zeros = np.max(self.matrix)*free_zeros*2 / (number_of_zeros_initial + 1)
+        
+        # Subtract penalty of positions from initial state to final of the move
+        penalty_max_position_final = self._calc_penalty_max_position(self.matrix, self.mask_position_val)
+        penalty_max_position_initial = self._calc_penalty_max_position(start_matrix, self.mask_position_val)
+        penalty_max_position = penalty_max_position_final - penalty_max_position_initial
+        
+        penalty_impossible_move = 0 if not done else 1
+        reward = collapsed_cells - penalty_max_position + reward_free_zeros
+        reward *= penalty_impossible_move
 
         self.game_score += added_merge
 
